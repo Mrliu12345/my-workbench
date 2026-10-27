@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>个人工作台</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32">
+              <rect x="3" y="3" width="26" height="26" rx="8" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".45" />
+              <path d="M9 11h14M9 16h10M9 21h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </div>
+          <div>
+            <div class="brand-name">个人工作台</div>
+            <div class="brand-sub" id="greeting">今天也要好好安排</div>
+          </div>
+        </div>
+        <div class="top-actions">
+          <span class="chip" id="clock">--:--</span>
+          <span class="chip" id="sync-state">已保存</span>
+          <button class="btn btn-sm" id="btn-export" title="把所有数据导出成一个 JSON 文件">导出数据</button>
+          <button class="btn btn-sm" id="btn-import" title="从 JSON 文件恢复数据">导入数据</button>
+          <button class="btn btn-sm btn-ghost" id="btn-settings" title="设置">设置</button>
+        </div>
+      </header>
+
+      <main class="grid">
+        <!-- 左列 -->
+        <section class="col">
+          <div class="card stat-card">
+            <div class="card-head">
+              <h2>今日概览</h2>
+              <span class="muted" id="today-label"></span>
+            </div>
+            <div class="stats" id="stats"></div>
+            <div class="progress-block">
+              <div class="progress-label">
+                <span>今日待办完成度</span>
+                <b id="todo-ratio">0%</b>
+              </div>
+              <div class="bar"><i id="todo-bar"></i></div>
+            </div>
+            <div class="quote" id="quote"></div>
+          </div>
+
+          <div class="card" id="event-card">
+            <div class="card-head">
+              <h2>日程倒计时</h2>
+              <span class="muted" id="event-hint">点击「添加」创建</span>
+            </div>
+            <div class="event-list" id="event-list"></div>
+            <div class="inline-form">
+              <input id="event-title" type="text" placeholder="事件名称，例如：项目评审会" maxlength="40" />
+              <input id="event-datetime" type="datetime-local" />
+              <button class="btn btn-sm btn-primary" id="event-add">添加</button>
+            </div>
+          </div>
+
+          <div class="card" id="focus-card">
+            <div class="card-head">
+              <h2>专注计时</h2>
+              <div class="seg" id="focus-seg">
+                <button class="seg-btn active" data-min="25">25</button>
+                <button class="seg-btn" data-min="45">45</button>
+                <button class="seg-btn" data-min="60">60</button>
+              </div>
+            </div>
+            <div class="focus-wrap">
+              <div class="ring">
+                <svg viewBox="0 0 160 160">
+                  <circle cx="80" cy="80" r="68" class="ring-bg" />
+                  <circle cx="80" cy="80" r="68" class="ring-fg" id="ring-fg" />
+                </svg>
+                <div class="ring-text">
+                  <div id="focus-time">25:00</div>
+                  <small id="focus-state">准备开始</small>
+                </div>
+              </div>
+              <div class="focus-side">
+                <button class="btn btn-primary" id="focus-toggle">开始专注</button>
+                <button class="btn btn-ghost btn-sm" id="focus-reset">重来</button>
+                <div class="focus-meta">
+                  今日已专注 <b id="focus-today">0</b> 分钟 · 共 <b id="focus-count">0</b> 次
+                </div>
+                <div class="focus-bars" id="focus-bars"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 中列 -->
+        <section class="col">
+          <div class="card" id="todo-card">
+            <div class="card-head">
+              <h2>待办清单</h2>
+              <div class="card-tools">
+                <select id="todo-filter" class="mini-select">
+                  <option value="active">未完成</option>
+                  <option value="done">已完成</option>
+                  <option value="all">全部</option>
+                </select>
+                <button class="btn btn-sm" id="todo-clear-done">清除已完成</button>
+              </div>
+            </div>
+            <form class="inline-form" id="todo-form">
+              <input id="todo-input" type="text" placeholder="加一件要做的事，回车保存" maxlength="120" autocomplete="off" />
+              <select id="todo-priority" class="mini-select" title="优先级">
+                <option value="high">高</option>
+                <option value="normal" selected>中</option>
+                <option value="low">低</option>
+              </select>
+              <button class="btn btn-sm btn-primary" type="submit">添加</button>
+            </form>
+            <ul class="todo-list" id="todo-list"></ul>
+          </div>
+
+          <div class="card" id="habit-card">
+            <div class="card-head">
+              <h2>习惯打卡</h2>
+              <button class="btn btn-sm" id="habit-add">新习惯</button>
+            </div>
+            <ul class="habit-list" id="habit-list"></ul>
+          </div>
+
+          <div class="card" id="tools-card">
+            <div class="card-head">
+              <h2>常用工具</h2>
+              <button class="btn btn-sm" id="tool-add">添加</button>
+            </div>
+            <div class="tools" id="tools"></div>
+          </div>
+        </section>
+
+        <!-- 右列 -->
+        <section class="col">
+          <div class="card" id="note-card">
+            <div class="card-head">
+              <h2>便笺 · 灵感</h2>
+              <div class="card-tools">
+                <select id="note-filter" class="mini-select">
+                  <option value="">全部</option>
+                  <option value="idea">灵感</option>
+                  <option value="note">笔记</option>
+                  <option value="todo">备忘</option>
+                </select>
+                <button class="btn btn-sm btn-primary" id="note-add">新建</button>
+              </div>
+            </div>
+            <div class="note-list" id="note-list"></div>
+          </div>
+
+          <div class="card" id="link-card">
+            <div class="card-head">
+              <h2>链接收藏</h2>
+              <button class="btn btn-sm" id="link-add">添加</button>
+            </div>
+            <div class="link-list" id="link-list"></div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span>数据只保存在本机 data/workbench.json · 修改后自动保存</span>
+        <span id="data-path"></span>
+      </footer>
+    </div>
+
+    <!-- 通用弹窗 -->
+    <div class="modal" id="modal" hidden>
+      <div class="modal-card">
+        <header>
+          <h3 id="modal-title">编辑</h3>
+          <button class="modal-close" id="modal-close">×</button>
+        </header>
+        <div class="modal-body" id="modal-body"></div>
+        <footer>
+          <button class="btn" id="modal-cancel">取消</button>
+          <button class="btn btn-primary" id="modal-ok">保存</button>
+        </footer>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

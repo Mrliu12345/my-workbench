@@ -1,0 +1,20 @@
+{
+  "name": "my-workbench",
+  "productName": "个人工作台",
+  "version": "1.0.0",
+  "private": true,
+  "description": "本地个人工作台：待办、日程倒计时、专注计时、便笺、收藏、习惯打卡，数据只存本机",
+  "main": "desktop/main.js",
+  "scripts": {
+    "start": "electron .",
+    "start:web": "node server.js",
+    "open": "node scripts/open.mjs",
+    "icons": "node scripts/make-icons.cjs"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@electron/packager": "^20.3.0",
+    "electron": "^43.3.0"
+  }
+}
